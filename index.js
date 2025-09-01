@@ -252,108 +252,81 @@ async function getSongsFromFolder(folder) {
 
 
 
-
 async function main() {
-    // Load songs from NCS folder (Method 1)
-    songs = await getSongsFromFolder("SONGS/ncs");
-    // Or load Pashto instead:
-    // songs = await getSongsFromFolder("SONGS/Phasto");
+    // Choose which folder to load
+    songs = await getSongsFromFolder("SONGS/ncs"); // change to "SONGS/Phasto" if needed
 
+    // Play the first song if available
     if (songs.length > 0) {
         playsong(songs[0], true);
     }
 
-    //Display the Albums 
-    displayAlbums();
-
-    //Attach an event listener to play, previous ,next
+    // Play/Pause button
     playbarplay.addEventListener("click", () => {
         if (currentSong.paused) {
-            console.log("Playing");
             currentSong.play();
             playbarplay.src = "play.svg";
-        }
-        else {
-            console.log("Paused");
+        } else {
             currentSong.pause();
             playbarplay.src = "pause.svg";
         }
     });
 
-    //Attaching event listener with previous
+    // Previous button
     previous.addEventListener("click", () => {
         let index = songs.indexOf(currentSong.src.split("/").slice(-1)[0]);
-        if ((index - 1) >= 0) {
-            playsong(songs[index - 1]);
-        }
+        if (index > 0) playsong(songs[index - 1]);
     });
 
-    //Attaching event listener with next
+    // Next button
     next.addEventListener("click", () => {
         let index = songs.indexOf(currentSong.src.split("/").slice(-1)[0]);
-        if ((index + 1) < songs.length) {
-            playsong(songs[index + 1]);
-        }
+        if (index < songs.length - 1) playsong(songs[index + 1]);
     });
 
-    //Displaying the time of a song
+    // Update song time
     currentSong.addEventListener("timeupdate", () => {
         let current = newFunction(currentSong.currentTime);
         let total = newFunction(currentSong.duration);
-
         document.querySelector(".playbar-song-time").innerHTML = `${current} / ${total}`;
         document.querySelector(".circle").style.left = (currentSong.currentTime / currentSong.duration) * 100 + "%";
     });
 
+    // Seekbar
     document.querySelector(".seekbar").addEventListener("click", (e) => {
-        let seekbar = document.querySelector(".seekbar");
-        let circle = document.querySelector(".circle");
-
-        let clickX = e.offsetX;
-        let seekbarWidth = seekbar.clientWidth;
-        let percent = (clickX / seekbarWidth) * 100;
-
-        circle.style.left = percent + "%";
-
-        // Jump song to that position
+        let seekbarWidth = e.currentTarget.clientWidth;
+        let percent = (e.offsetX / seekbarWidth) * 100;
+        document.querySelector(".circle").style.left = percent + "%";
         currentSong.currentTime = (percent / 100) * currentSong.duration;
     });
 
-    //Adding an event to the volume range input
+    // Volume control
     let volumeBarRange = document.querySelector(".volume input");
-    let SoundBefore = 0.50; // store last volume before mute
-    document.querySelector(".volume input").addEventListener("input", (e) => {
-        SoundBefore = parseInt(e.target.value) / 100;
+    let SoundBefore = 0.50;
+    volumeBarRange.addEventListener("input", (e) => {
+        SoundBefore = e.target.value / 100;
         currentSong.volume = SoundBefore;
+        document.querySelector(".Volume-Button").src = SoundBefore === 0 ? "volumeOFF.svg" : "volumeON.svg";
     });
 
-    document.querySelector(".volume input").addEventListener("input", () => {
-        let volumeRange = document.querySelector(".Volume-Button");
-        if (parseInt(volumeBarRange.value) === 0) {
-            volumeRange.src = "volumeOFF.svg";
-        } else {
-            volumeRange.src = "volumeON.svg";
-        }
-    });
-
-    //Adding an event to the volume svg itself
+    // Volume button toggle
     let soundOn = true;
     document.querySelector(".Volume-Button").addEventListener("click", () => {
         if (soundOn) {
             currentSong.volume = 0;
             volumeBarRange.value = 0;
             document.querySelector(".Volume-Button").src = "volumeOFF.svg";
-            soundOn = false;
         } else {
             currentSong.volume = SoundBefore;
             volumeBarRange.value = SoundBefore * 100;
             document.querySelector(".Volume-Button").src = "volumeON.svg";
-            soundOn = true;
         }
+        soundOn = !soundOn;
     });
 }
 
 main();
+
 
 
 function newFunction(timeInSeconds) {
