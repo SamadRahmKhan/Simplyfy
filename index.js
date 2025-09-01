@@ -61,14 +61,19 @@ async function main() {
 displaySongs();
 
 
-    function displaySongs() {
-    const cardContainer = document.querySelector(".card-container");
-    cardContainer.innerHTML = ""; // clear old cards
+    async function displaySongs() {
+    let songsWithTags = await getSongsWithTags(currFolder);
 
-    songs.forEach(song => {
-        let DisplayName = song.replace(".mp3", "").replace(/%20/g, " ");
+    const cardContainer = document.querySelector(".card-container");
+    cardContainer.innerHTML = ""; // clear previous cards
+
+    for (let song of songsWithTags) {
+        let RawName = song.file || song.title;
+        let StillRawName = RawName.split("_")[0];
+        let DisplayName = StillRawName.replaceAll("%20", " ").replace(".mp3", "");
+
         cardContainer.innerHTML += `
-            <div class="card rounded" data-file="${song}">
+            <div class="card rounded" data-file="${song.file || song.title}">
                 <div class="play">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
                         <circle cx="24" cy="24" r="24" fill="green" />
@@ -76,10 +81,13 @@ displaySongs();
                             d="M19 18c0-1.2 1.2-2 2.2-1.4l10 6c1 .6 1 2.2 0 2.8l-10 6c-1 .6-2.2-0.1-2.2-1.4V18z" />
                     </svg>
                 </div>
+                <img class="secondPlay" src="secondPlay.svg" alt="Play-Button">
+                <img class="rounded" src="${song.picture || '/default.jpg'}" alt="cover">
                 <h4>${DisplayName}</h4>
+                <p>${song.artist}</p>
             </div>
         `;
-    });
+    }
 
     // Attach click events
     Array.from(cardContainer.getElementsByClassName("card")).forEach(card => {
