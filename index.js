@@ -49,53 +49,53 @@ async function readTagsSafe(url) {
 }
 
 //The Change
-async function getSongs(folder) {
-    currFolder = folder;
+// async function getSongs(folder) {
+//     currFolder = folder;
 
-    // Load songs.json instead of trying to scrape folder
-    let response = await fetch(`/${folder}/songs.json`);
-    let data = await response.json();
-    songs = data.songs; // array of .mp3 filenames
+//     // Load songs.json instead of trying to scrape folder
+//     let response = await fetch(`${folder}/songs.json`);
+//     let data = await response.json();
+//     songs = data.songs; // array of .mp3 filenames
 
-    console.log("Songs loaded:", songs);
+//     console.log("Songs loaded:", songs);
 
-    // Get metadata
-    let songsWithTags = await getSongsWithTags(folder);
+//     // Get metadata
+//     let songsWithTags = await getSongsWithTags(folder);
 
-    let cardContainer = document.querySelector(".card-container"); 
-    cardContainer.innerHTML = ""; // clear old songs
+//     let cardContainer = document.querySelector(".card-container"); 
+//     cardContainer.innerHTML = ""; // clear old songs
 
-    console.log(songsWithTags);
-    for (let song of songsWithTags) {
-        let RawName = song.file || song.title;
-        let StillRawName = RawName.split("_")[0];
-        let DisplayName = StillRawName.replaceAll("%20"," ").replace(".mp3","");
+//     console.log(songsWithTags);
+//     for (let song of songsWithTags) {
+//         let RawName = song.file || song.title;
+//         let StillRawName = RawName.split("_")[0];
+//         let DisplayName = StillRawName.replaceAll("%20"," ").replace(".mp3","");
 
-        cardContainer.innerHTML += `
-            <div class="card rounded" data-file="${song.file || song.title}">
-                <div class="play">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
-                        <circle cx="24" cy="24" r="24" fill="green" />
-                        <path fill="white" fill-rule="evenodd" clip-rule="evenodd"
-                            d="M19 18c0-1.2 1.2-2 2.2-1.4l10 6c1 .6 1 2.2 0 2.8l-10 6c-1 .6-2.2-0.1-2.2-1.4V18z" />
-                    </svg>
-                </div>
-                <img class="secondPlay" src="secondPlay.svg" alt="Play-Button">
-                <img class="rounded" src="${song.picture || '/default.jpg'}" alt="cover">
-                <h4>${DisplayName}</h4>
-                <p>${song.artist}</p>
-            </div>
-        `;
-    }
+//         cardContainer.innerHTML += `
+//             <div class="card rounded" data-file="${song.file || song.title}">
+//                 <div class="play">
+//                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+//                         <circle cx="24" cy="24" r="24" fill="green" />
+//                         <path fill="white" fill-rule="evenodd" clip-rule="evenodd"
+//                             d="M19 18c0-1.2 1.2-2 2.2-1.4l10 6c1 .6 1 2.2 0 2.8l-10 6c-1 .6-2.2-0.1-2.2-1.4V18z" />
+//                     </svg>
+//                 </div>
+//                 <img class="secondPlay" src="secondPlay.svg" alt="Play-Button">
+//                 <img class="rounded" src="${song.picture || '/default.jpg'}" alt="cover">
+//                 <h4>${DisplayName}</h4>
+//                 <p>${song.artist}</p>
+//             </div>
+//         `;
+//     }
 
-    // Attach click events
-    Array.from(cardContainer.getElementsByClassName("card")).forEach(card => {
-        card.addEventListener("click", () => {
-            let file = card.getAttribute("data-file");
-            playsong(file);
-        });
-    });
-}
+//     // Attach click events
+//     Array.from(cardContainer.getElementsByClassName("card")).forEach(card => {
+//         card.addEventListener("click", () => {
+//             let file = card.getAttribute("data-file");
+//             playsong(file);
+//         });
+//     });
+// }
 
 
 
@@ -174,7 +174,7 @@ function arrayBufferToBase64(buffer) {
 
 
 function playsong(track, pause = false) {
-    currentSong.src = `/${currFolder}/` + track;
+    currentSong.src = `${currFolder}/` + track;
     if (!pause) {
         currentSong.play();
         playbarplay.src = "play.svg"
