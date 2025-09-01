@@ -237,50 +237,73 @@ async function displayAlbums() {
     });
 }
 
+// 📂 Reads songs.json inside a folder and returns list of filenames
+async function getSongsFromFolder(folder) {
+    try {
+        let response = await fetch(`${folder}/songs.json`);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        let songs = await response.json();
+        return songs;
+    } catch (e) {
+        console.error("Error loading songs.json from", folder, e);
+        return [];
+    }
+}
+
+
+async function getSongsFromFolder(folder) {
+    try {
+        let response = await fetch(`${folder}/songs.json`);
+        let songs = await response.json();
+        return songs.map(song => `${folder}/${song}`);
+    } catch (e) {
+        console.error("Error loading songs from", folder, e);
+        return [];
+    }
+}
+
 async function main() {
+    // Load songs from NCS folder (Method 1)
+    songs = await getSongsFromFolder("SONGS/ncs");
+    // Or load Pashto instead:
+    // songs = await getSongsFromFolder("SONGS/Phasto");
 
-    // Get songs from above
-    await getSongsFromFolder("SONGS/ncs");
-    await getSongsFromFolder("SONGS/Phasto");
-
-
-    playsong(songs[0], true)
+    if (songs.length > 0) {
+        playsong(songs[0], true);
+    }
 
     //Display the Albums 
-    displayAlbums()
+    displayAlbums();
 
-    //Attach an event listner to play, previous ,next
+    //Attach an event listener to play, previous ,next
     playbarplay.addEventListener("click", () => {
         if (currentSong.paused) {
-            console.log("Playiing");
+            console.log("Playing");
             currentSong.play();
-            playbarplay.src = "play.svg"
+            playbarplay.src = "play.svg";
         }
         else {
             console.log("Paused");
             currentSong.pause();
-            playbarplay.src = "pause.svg"
+            playbarplay.src = "pause.svg";
         }
-    })
+    });
 
-    //Attaching event listner with previous
+    //Attaching event listener with previous
     previous.addEventListener("click", () => {
-        console.log(currentSong);
-        let index = songs.indexOf(currentSong.src.split("/").slice(-1)[0])
+        let index = songs.indexOf(currentSong.src.split("/").slice(-1)[0]);
         if ((index - 1) >= 0) {
-            playsong(songs[index - 1])
+            playsong(songs[index - 1]);
         }
-    })
+    });
 
-    //Attaching event listner with next
+    //Attaching event listener with next
     next.addEventListener("click", () => {
-        console.log(currentSong);
-        let index = songs.indexOf(currentSong.src.split("/").slice(-1)[0])
+        let index = songs.indexOf(currentSong.src.split("/").slice(-1)[0]);
         if ((index + 1) < songs.length) {
-            playsong(songs[index + 1])
+            playsong(songs[index + 1]);
         }
-        console.log(songs, index);
-    })
+    });
 
     //Displaying the time of a song
     currentSong.addEventListener("timeupdate", () => {
@@ -289,11 +312,9 @@ async function main() {
 
         document.querySelector(".playbar-song-time").innerHTML = `${current} / ${total}`;
         document.querySelector(".circle").style.left = (currentSong.currentTime / currentSong.duration) * 100 + "%";
-
     });
 
     document.querySelector(".seekbar").addEventListener("click", (e) => {
-
         let seekbar = document.querySelector(".seekbar");
         let circle = document.querySelector(".circle");
 
@@ -305,55 +326,44 @@ async function main() {
 
         // Jump song to that position
         currentSong.currentTime = (percent / 100) * currentSong.duration;
-    })
+    });
 
     //Adding an event to the volume range input
     let volumeBarRange = document.querySelector(".volume input");
-    let SoundBefore = 0.50;//Defining this outside the event because we will uuse it in another event also
-    document.querySelector(".volume").getElementsByTagName("input")[0].addEventListener("input", (e) => {
-        SoundBefore = parseInt(e.target.value) / 100
-        currentSong.volume = parseInt(e.target.value) / 100;
-    })
-
-    //Adding an event volume range
-    document.querySelector(".volume input").addEventListener("input", () => {
-        let volumeRange = document.querySelector(".Volume-Button");
-        volumeRange.src = "volumeON.svg";
-    })
+    let SoundBefore = 0.50; // store last volume before mute
+    document.querySelector(".volume input").addEventListener("input", (e) => {
+        SoundBefore = parseInt(e.target.value) / 100;
+        currentSong.volume = SoundBefore;
+    });
 
     document.querySelector(".volume input").addEventListener("input", () => {
         let volumeRange = document.querySelector(".Volume-Button");
-        if (parseInt(volumeBarRange.value) === 0){
+        if (parseInt(volumeBarRange.value) === 0) {
             volumeRange.src = "volumeOFF.svg";
-        }
-        else{
+        } else {
             volumeRange.src = "volumeON.svg";
         }
-    })
+    });
 
-    //adding an event to the volume svg itself
-    let soundOn = false;
-    document.querySelector(".Volume-Button ").addEventListener("click", (e) => {
-        if (!soundOn) {
+    //Adding an event to the volume svg itself
+    let soundOn = true;
+    document.querySelector(".Volume-Button").addEventListener("click", () => {
+        if (soundOn) {
             currentSong.volume = 0;
             volumeBarRange.value = 0;
-            document.querySelector(".Volume-Button ").src = "volumeOFF.svg";
-            console.log("sound OFF");
-            soundOn = true;
-        }
-        else {
+            document.querySelector(".Volume-Button").src = "volumeOFF.svg";
+            soundOn = false;
+        } else {
             currentSong.volume = SoundBefore;
             volumeBarRange.value = SoundBefore * 100;
-            document.querySelector(".Volume-Button ").src = "volumeON.svg";
-            console.log("Sound ON");
-            soundOn = false;
+            document.querySelector(".Volume-Button").src = "volumeON.svg";
+            soundOn = true;
         }
-    })
-
-
-
+    });
 }
+
 main();
+
 
 function newFunction(timeInSeconds) {
     let minutes = Math.floor(timeInSeconds / 60);
