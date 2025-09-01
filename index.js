@@ -251,16 +251,7 @@ async function getSongsFromFolder(folder) {
 }
 
 
-async function getSongsFromFolder(folder) {
-    try {
-        let response = await fetch(`${folder}/songs.json`);
-        let songs = await response.json();
-        return songs.map(song => `${folder}/${song}`);
-    } catch (e) {
-        console.error("Error loading songs from", folder, e);
-        return [];
-    }
-}
+
 
 async function main() {
     // Load songs from NCS folder (Method 1)
