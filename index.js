@@ -1,7 +1,7 @@
 
 let playbarplay = document.getElementById("playbarplay")
 let currentSong = new Audio();
-let songs = [];
+let songs = []; 
 let currFolder;
 
 // returns Promise<tagObject> using jsmediatags
@@ -48,84 +48,77 @@ async function readTagsSafe(url) {
   }
 }
 
-
+//The Change
 async function getSongs(folder) {
     currFolder = folder;
-    let a = await fetch(`/SONGS/${folder}/`);
-    let response = await a.text();
-    let div = document.createElement("div");
-    div.innerHTML = response;
-    
-    let as = div.getElementsByTagName("a");
-    songs = [];
-    for (let element of as) {
-        if (element.href.endsWith(".mp3")) {
-            songs.push(element.href.split(`/${folder}/`)[1]);
-        }
-    }
-    console.log(songs);
-    
+
+    // Load songs.json instead of trying to scrape folder
+    let response = await fetch(`/${folder}/songs.json`);
+    let data = await response.json();
+    songs = data.songs; // array of .mp3 filenames
+
+    console.log("Songs loaded:", songs);
+
     // Get metadata
     let songsWithTags = await getSongsWithTags(folder);
-    
-    let cardContainer = document.querySelector(".card-container"); // now songs go here
+
+    let cardContainer = document.querySelector(".card-container"); 
     cardContainer.innerHTML = ""; // clear old songs
-    
 
     console.log(songsWithTags);
     for (let song of songsWithTags) {
         let RawName = song.file || song.title;
         let StillRawName = RawName.split("_")[0];
         let DisplayName = StillRawName.replaceAll("%20"," ").replace(".mp3","");
-        console.log(DisplayName);
 
-
-        // let card = document.createElement("div");
-        // card.classList.add("card");
-        // card.setAttribute("data-file", song.file || song.title);
-        let cardContainerMain = document.querySelector(".card-container")
-        let SongName = fetch
-        cardContainerMain.innerHTML += `
-
-
-                    <div class="card rounded" data-file="${song.file || song.title}" >
-                        <div class="play">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
-                                <!-- Circular green background -->
-                                <circle cx="24" cy="24" r="24" fill="green" />
-                                <!-- Play button moved 2px down from original (1px up from last version) -->
-                                <path fill="white" fill-rule="evenodd" clip-rule="evenodd"
-                                    d="M19 18c0-1.2 1.2-2 2.2-1.4l10 6c1 .6 1 2.2 0 2.8l-10 6c-1 .6-2.2-0.1-2.2-1.4V18z" />
-                            </svg>
-                        </div>
-                                <img class="secondPlay" src="secondPlay.svg" alt="Play-Button">
-                        <img class="rounded"  src="${song.picture || '/default.jpg'}"
-                            alt="cover">
-                        <h4>${DisplayName}</h4>
-                        <p>${song.artist}</p>
-                    </div>
+        cardContainer.innerHTML += `
+            <div class="card rounded" data-file="${song.file || song.title}">
+                <div class="play">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+                        <circle cx="24" cy="24" r="24" fill="green" />
+                        <path fill="white" fill-rule="evenodd" clip-rule="evenodd"
+                            d="M19 18c0-1.2 1.2-2 2.2-1.4l10 6c1 .6 1 2.2 0 2.8l-10 6c-1 .6-2.2-0.1-2.2-1.4V18z" />
+                    </svg>
+                </div>
+                <img class="secondPlay" src="secondPlay.svg" alt="Play-Button">
+                <img class="rounded" src="${song.picture || '/default.jpg'}" alt="cover">
+                <h4>${DisplayName}</h4>
+                <p>${song.artist}</p>
+            </div>
         `;
-
-        // cardContainer.appendChild(card);
     }
 
     // Attach click events
     Array.from(cardContainer.getElementsByClassName("card")).forEach(card => {
-        card.addEventListener("click", (element) => {
-        let file = card.getAttribute("data-file");
-        playsong(file);
+        card.addEventListener("click", () => {
+            let file = card.getAttribute("data-file");
+            playsong(file);
         });
     });
-
-    
 }
 
 
 
 
-//Defining the NEW tags reader Function
+//The Change
+// Function to load songs.json first
+async function loadSongs(folder) {
+    try {
+        let response = await fetch(`${folder}/songs.json`);
+        let data = await response.json();
+        return data.songs; // returns ["song1.mp3", "song2.mp3", ...]
+    } catch (e) {
+        console.error("Error loading songs.json from", folder, e);
+        return [];
+    }
+}
+
+// Defining the NEW tags reader Function
 async function getSongsWithTags(folder) {
     let songsWithTags = [];
+
+    // ✅ First load songs from songs.json
+    let songs = await loadSongs(folder);
 
     for (let song of songs) {
         try {
@@ -136,7 +129,7 @@ async function getSongsWithTags(folder) {
                 jsmediatags.read(blob, {
                     onSuccess: (tag) => {
                         songsWithTags.push({
-                            file: song, // ✅ keep actual filename
+                            file: song, // keep actual filename
                             title: tag.tags.title || song,
                             artist: tag.tags.artist || "Unknown",
                             album: tag.tags.album || "Unknown",
@@ -149,7 +142,7 @@ async function getSongsWithTags(folder) {
                     onError: (error) => {
                         console.log("Tag error for", song, error);
                         songsWithTags.push({
-                            file: song, // ✅ still save filename
+                            file: song,
                             title: song,
                             artist: "Unknown",
                             album: "Unknown",
