@@ -37,11 +37,78 @@ function playsong(track, pause = false) {
     }
 }
 
+
+
+// Load songs with metadata (title, artist, picture)
+async function getSongsWithTags(folder) {
+    const files = await getSongsFromFolder(folder); // load filenames
+    const songsWithTags = [];
+
+    for (let file of files) {
+        try {
+            let response = await fetch(`${folder}/${file}`);
+            let blob = await response.blob();
+
+            await new Promise((resolve) => {
+                jsmediatags.read(blob, {
+                    onSuccess: (tag) => {
+                        songsWithTags.push({
+                            file: file,
+                            title: tag.tags.title || file,
+                            artist: tag.tags.artist || "Unknown",
+                            picture: tag.tags.picture
+                                ? `data:${tag.tags.picture.format};base64,${arrayBufferToBase64(tag.tags.picture.data)}`
+                                : null
+                        });
+                        resolve();
+                    },
+                    onError: () => {
+                        songsWithTags.push({
+                            file: file,
+                            title: file,
+                            artist: "Unknown",
+                            picture: null
+                        });
+                        resolve();
+                    }
+                });
+            });
+        } catch (e) {
+            songsWithTags.push({
+                file: file,
+                title: file,
+                artist: "Unknown",
+                picture: null
+            });
+        }
+    }
+
+    return songsWithTags;
+}
+
+// Helper to convert cover art bytes → base64
+function arrayBufferToBase64(buffer) {
+    let binary = '';
+    let bytes = new Uint8Array(buffer);
+    let len = bytes.byteLength;
+    for (let i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i]);
+    }
+    return window.btoa(binary);
+}
+
+
+
+
+
 // Main function
 async function main() {
     // Load default folder songs
     songs = await getSongsFromFolder(currFolder);
 
+    songs = await getSongsFromFolder(currFolder);
+    displaySongs();
+    
     if (songs.length > 0) {
         playsong(songs[0], true);
     }
@@ -57,8 +124,7 @@ async function main() {
         }
     });
 
-    songs = await getSongsFromFolder(currFolder);
-displaySongs();
+    
 
 
     async function displaySongs() {
