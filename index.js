@@ -232,7 +232,7 @@ async function displayAlbums() {
     // click on playlist → load its songs
     Array.from(ul.getElementsByTagName("li")).forEach(li => {
         li.addEventListener("click", async () => {
-            songs = await getSongs(`SONGS/${li.dataset.folder}`);
+            songs = await getSongsFromFolder(`SONGS/${li.dataset.folder}`);
         });
     });
 }
@@ -240,7 +240,9 @@ async function displayAlbums() {
 async function main() {
 
     // Get songs from above
-    await getSongs("SONGS/ncs")
+    await getSongsFromFolder("SONGS/ncs");
+    await getSongsFromFolder("SONGS/Phasto");
+
 
     playsong(songs[0], true)
 
