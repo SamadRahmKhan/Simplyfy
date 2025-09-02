@@ -103,6 +103,9 @@ function arrayBufferToBase64(buffer) {
 
 // Main function
 async function main() {
+
+    await displayAlbums();
+    
     // Load default folder songs
     songs = await getSongsFromFolder(currFolder);
 
@@ -236,6 +239,52 @@ main();
             playsong(file);
         });
     });
+}
+
+
+async function displayAlbums() {
+    try {
+        // fetch albums.json
+        let response = await fetch("SONGS/albums.json");
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        let albums = await response.json();
+
+        let ul = document.querySelector(".song-list ul"); // left sidebar
+        ul.innerHTML = ""; // clear old playlists
+
+        for (let album of albums) {
+            let li = document.createElement("li");
+            li.dataset.folder = album.folder;
+
+            li.innerHTML = `
+                <div class="playlist-info">
+                    <div class="playlist-info-albums">
+                        <div>
+                            <h4>${album.title}</h4>
+                            <p>${album.description}</p>
+                        </div>
+                        <div class="play-song display">
+                            <img class="invert" src="outline/outline-play.svg" alt="">
+                        </div>
+                    </div>
+                </div>
+            `;
+            ul.appendChild(li);
+        }
+
+        // click on playlist → load its songs
+        Array.from(ul.getElementsByTagName("li")).forEach(li => {
+            li.addEventListener("click", async () => {
+                currFolder = `SONGS/${li.dataset.folder}`;
+                songs = await getSongsFromFolder(currFolder);
+                displaySongs();
+                if (songs.length > 0) playsong(songs[0], true);
+            });
+        });
+
+    } catch (e) {
+        console.error("Error loading albums:", e);
+    }
 }
 
 
