@@ -1,4 +1,4 @@
-console.log("Credits:- Samad Rahim Khan,Youtube,Chatgpt");
+console.log("%cCredits:- Samad Rahim Khan, Youtube, ChatGPT", "color: green; font-size:16px; font-weight:bold;");
 // Global variables
 let playbarplay = document.getElementById("playbarplay");
 let currentSong = new Audio();
