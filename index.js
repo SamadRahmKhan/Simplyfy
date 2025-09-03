@@ -1,3 +1,4 @@
+console.log("Credits:- Samad Rahim Khan,Youtube,Chatgpt");
 // Global variables
 let playbarplay = document.getElementById("playbarplay");
 let currentSong = new Audio();
