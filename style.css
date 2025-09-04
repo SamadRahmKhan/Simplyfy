@@ -532,6 +532,7 @@ p {
         height: 146px;
         width: 40%;
         padding: 12px;
+            padding-bottom: 27px;
     }
 
     .spotifyPlaylists p {
@@ -549,6 +550,7 @@ p {
     }
 
     .card img {
+        right: 18px;
         border-radius: 2px;
         padding-top: 0px;
         width: 100%;
@@ -576,11 +578,11 @@ p {
     }
 
     .card:hover .secondPlay {
-        width: 25px;
-        height: 25px;
+        width: 45px;
+        height: 45px;
         cursor: pointer;
         opacity: 1;
-        top: 70px;
+        top: 80px;
     }
 
     .spotifyPlaylists h2 {
