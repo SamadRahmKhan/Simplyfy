@@ -529,18 +529,18 @@ p {
     }
 
     .spotifyPlaylists .card {
-        height: 103px;
-        width: 66px;
+        height: 146px;
+        width: 42%;
         padding: 12px;
     }
 
     .spotifyPlaylists p {
-        font-size: 6px;
+        font-size: 11px;
         color: #9f9696;
     }
 
     .spotifyPlaylists h4 {
-        font-size: 7px;
+        font-size: 14px;
     }
 
     .card h4,
