@@ -530,7 +530,7 @@ p {
 
     .spotifyPlaylists .card {
         height: 146px;
-        width: 42%;
+        width: 40%;
         padding: 12px;
     }
 
@@ -545,7 +545,7 @@ p {
 
     .card h4,
     p {
-        padding-top: 3px;
+        padding-top: 4px;
     }
 
     .card img {
@@ -694,5 +694,8 @@ p {
         gap: 9px;
         position: relative;
         right: 0px;
+    }
+        .card-container {
+        max-height: 61.5vh;
     }
 }
