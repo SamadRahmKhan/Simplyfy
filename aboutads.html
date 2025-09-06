@@ -4,18 +4,98 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About Ads</title>
-    <style>
+<style>
         body{
             font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+        }
+        .con1{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 416px;
+        }
+        .con2{
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .con2 img{
+            width: 358px;
+        }
+        .Secondary-image,.textarea,.hints,.Third-image,.hints2,.fourth-image{
+            display: none;
+        }
+        
+        .con1 .btns {
+            width: 27%;
+            display: flex;
+            justify-content: space-between;
+        }
+        .btn{
+            padding: 6px 14px;
+            border-radius: 6px;
+            margin: 15px;
+            background-color: rgb(36, 36, 253);
+            color: white;
+        }
+        .btn:hover{
+            cursor: pointer;
+            background-color: rgb(0, 0, 255);
         }
     </style>
 </head>
 <body>
+    <h2>I dont Know about <a>About Ad </a> but ...</h2>
     <div class="con1">
-        <h2>Hmmmmm Adss </h2>
+        <h2 class="main-h2" >Anyways is this a triangle </h2>
         <div class="con2">
-            <img src="" alt="">
+            <img class="image" src="MATHTRIANGLE.png" alt="A Triangle Yes OR No">
+            <img class="Secondary-image" src="GORILLAMEME.png" alt="">
+            <img class="Third-image" src="GORILLAHINT.png" alt="">
+            <img class="fourth-image" src="EMOJIINDARKNESS.png" alt="">
+           <textarea class="textarea" rows="5" cols="40" placeholder="Enter your answer here"></textarea>
+        </div>
+        <div class="btns">
+            <button class="yes btn " >Yes</button>
+            <button class="hints btn " >Need a hint?</button>
+            <button class="hints2 btn " >Need Another Hint?</button>
+            <button class="no btn " >No</button>
         </div>
     </div>
+    <script>
+        document.querySelector(".yes").addEventListener("click",() => {
+            document.querySelector(".yes").style.display = "none";
+            document.querySelector(".textarea").style.display = "block";
+            document.querySelector(".hints").style.display = "block";
+            document.querySelector(".main-h2").innerHTML = "Then Prove It";
+            document.querySelector(".no").innerHTML = "No I can not prove it";
+        });
+        document.querySelector(".hints").addEventListener("click",() => {
+            document.querySelector(".main-h2").innerHTML = "Can you Prove It now?";
+            document.querySelector(".hints").style.display = "none";
+            document.querySelector(".hints2").style.display = "block";
+            document.querySelector(".Third-image").style.display = "block";
+            document.querySelector(".image").style.display = "none";
+            document.querySelector(".textarea").style.display = "none";
+        });
+        document.querySelector(".hints2").addEventListener("click",() => {
+            document.querySelector(".Third-image").style.display = "none";
+            document.querySelector(".fourth-image").style.display = "block";
+            document.querySelector(".main-h2").innerHTML = "";
+            document.querySelector(".btns").style.display = "none";
+            
+        });
+        document.querySelector(".no").addEventListener("click",() => {
+            document.querySelector(".Third-image").style.display = "none";
+            document.querySelector(".btns").style.display = "none";
+            document.querySelector(".textarea").style.display = "none";
+            document.querySelector(".main-h2").innerHTML ="Better Luck Next Time 👀"
+            document.querySelector(".Secondary-image").style.display = "block";
+            document.querySelector(".image").style.display = "none";
+        });
+
+    </script>
 </body>
 </html>
